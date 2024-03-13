@@ -17,3 +17,31 @@ class BaseConfig:
     @property
     def is_geo(self):
         return hasattr(self, "geo")
+
+    @property
+    def core(self):
+        raise NotImplementedError
+
+    @property
+    def geo(self):
+        raise NotImplementedError
+
+    @property
+    def localisation(self):
+        raise NotImplementedError
+
+    @property
+    def redis(self):
+        raise NotImplementedError
+
+    @property
+    def services(self):
+        raise NotImplementedError
+
+    @property
+    def sqlite(self):
+        raise NotImplementedError
+
+    @property
+    def telegram(self):
+        raise NotImplementedError
