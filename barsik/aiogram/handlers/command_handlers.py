@@ -14,5 +14,5 @@ class CommandHandlers:
         await message.answer(f"current state: {str(cur_state)}")
 
     @classmethod
-    def register(cls, router: Router, **kwargs):
+    def register(cls, router: Router, **kwargs) -> None:  # pylint: disable=unused-argument
         router.message.register(cls.current_state_handler, Command("state"))

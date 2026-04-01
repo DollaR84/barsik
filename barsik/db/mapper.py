@@ -64,6 +64,6 @@ class BaseDataMapper:
         return result
 
     async def create_or_update(self, model: Base):
-        result = await self.get_or_create(model)
+        await self.get_or_create(model)
         await self.update(model, **model.dict())
-        return await  self.get(model)
+        return await self.get(model)

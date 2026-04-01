@@ -1,8 +1,10 @@
 from .base_model import BaseDBModel
-from .time_created import TimeCreatedMixin
+from .timestamp import TimeCreateMixin, TimeUpdateMixin
 
 
 __all__ = [
     "BaseDBModel",
-    "TimeCreatedMixin",
+
+    "TimeCreateMixin",
+    "TimeUpdateMixin",
 ]

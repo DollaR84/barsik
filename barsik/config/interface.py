@@ -8,7 +8,7 @@ class BaseConfig:
 
     @property
     def is_redis(self):
-        return hasattr(self, "redis")
+        return hasattr(self, "redis") and getattr(self, "redis").is_exist
 
     @property
     def is_localisation(self):

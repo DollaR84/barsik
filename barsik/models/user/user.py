@@ -15,4 +15,4 @@ class User(Base):
     last_name: str | None = None
 
     lang: str | None = None
-    time_created: datetime | None = None
+    created_at: datetime | None = None

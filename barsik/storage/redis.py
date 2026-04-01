@@ -1,8 +1,12 @@
 import asyncio
+import sys
 import typing
 import json
 
-import aioredis
+if sys.version_info >= (3, 11):
+    from redis import asyncio as aioredis
+else:
+    import aioredis
 
 from .base import BaseStorage
 
@@ -141,7 +145,11 @@ class RedisStorage(BaseStorage):
 
     async def _get_adapter(self) -> AioRedisAdapterBase:
         if self._redis is None:
-            redis_version = int(aioredis.__version__.split(".", maxsplit=1)[0])
+            try:
+                redis_version = int(aioredis.__version__.split(".", maxsplit=1)[0])
+            except Exception:
+                redis_version = 2
+
             connection_data = {
                 "host": self._host,
                 "port": self._port,

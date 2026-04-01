@@ -12,6 +12,10 @@ class RedisData:
 
     is_key_builder: bool = True
 
+    @property
+    def is_exist(self) -> bool:
+        return self.host and self.port
+
 
 class RedisAdapter(BaseConfigAdapter):
     data: RedisData = RedisData
