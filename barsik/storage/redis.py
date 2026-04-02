@@ -74,12 +74,16 @@ class AioRedisAdapterV2(AioRedisAdapterBase):
             self, name: str,
             value: str | int | None,
             key: str | None = None,
+            ex: int | None = None,
     ):
         value = json.dumps({"value": value})
 
         if key:
-            return await self._redis.hset(key, key=name, value=value)
-        return await self._redis.set(name, value)
+            result = await self._redis.hset(key, key=name, value=value)
+            if ex:
+                await self._redis.expire(key, ex)
+            return result
+        return await self._redis.set(name, value, ex=ex)
 
     async def get(self, name, key: str | None = None):
         if key:
@@ -204,13 +208,14 @@ class RedisStorage(BaseStorage):
         self.data[key] = data
         await redis.set_data(data, key)
 
-    async def set(self, name: str, value: str, key: str | None = None):
+    async def set(self, name: str, value: str, key: str | None = None, ex: int | None = None):
         redis = await self._get_adapter()
-        await redis.set(name, value, key)
-        if key and "cache" not in key:
-            if key not in self.data:
-                self.data[key] = {}
-            self.data[key][name] = value
+        await redis.set(name, value, key, ex=ex)
+        if not ex:
+            if key and "cache" not in key:
+                if key not in self.data:
+                    self.data[key] = {}
+                self.data[key][name] = value
 
     async def clear(self):
         redis = await self._get_adapter()

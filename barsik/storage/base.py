@@ -19,7 +19,7 @@ class BaseStorage:
         raise NotImplementedError
 
     @abstractmethod
-    async def get(self, name: str, key: str | None = None) -> str | None:
+    async def get(self, name: str, key: str | None = None, ex: int | None = None) -> str | None:
         raise NotImplementedError
 
     @abstractmethod
@@ -31,7 +31,7 @@ class BaseStorage:
         raise NotImplementedError
 
     @abstractmethod
-    async def set(self, name: str, value: str, key: str | None = None):
+    async def set(self, name: str, value: str, key: str | None = None, ex: int | None = None):
         raise NotImplementedError
 
     @abstractmethod
