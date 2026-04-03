@@ -2,7 +2,7 @@ from setuptools import setup, find_packages
 
 setup(
     name='barsik',
-    version='0.7.4',
+    version='0.8.0',
     author='Ruslan Dolovaniuk',
     author_email='ruslan.dolovaniuk84@gmail.com',
     packages=find_packages(),
@@ -32,6 +32,12 @@ setup(
             "geopy",
             "shapely",
             "pyproj",
+        ],
+        "http": [
+            "adaptix",
+            "aiohttp",
+            "requests",
+            "dataclass_rest",
         ]
     }
 )
