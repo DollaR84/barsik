@@ -1,5 +1,6 @@
 from .auth import BearerAuth
 from .clients import HttpSyncClient, HttpAsyncClient
+from .health import HealthServer
 
 
 __all__ = (
@@ -7,4 +8,6 @@ __all__ = (
 
     "HttpSyncClient",
     "HttpAsyncClient",
+
+    "HealthServer",
 )
