@@ -2,13 +2,16 @@ from __future__ import annotations
 
 from abc import ABC
 import inspect
-from typing import Type
+from typing import Type, TypeVar
 
 from barsik.utils.text import paschal_case_to_snake_case, paschal_case_to_words
 
 
+T = TypeVar("T", bound="BaseAdapter")
+
+
 class BaseAdapter(ABC):
-    _adapters: dict[str, Type[BaseAdapter]]
+    _adapters: dict[str, Type[T]]
 
     def __init_subclass__(cls, is_abstract: bool = False, **kwargs):
         if is_abstract:
@@ -40,7 +43,7 @@ class BaseAdapter(ABC):
         raise ValueError(f"Error get suffix for adapter '{cls.__name__}'")
 
     @classmethod
-    def get_adapter(cls, name: str) -> Type[BaseAdapter] | None:
+    def get_adapter(cls, name: str) -> Type[T] | None:
         return cls._adapters.get(name)
 
     @classmethod
