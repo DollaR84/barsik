@@ -2,11 +2,12 @@ from setuptools import setup, find_packages
 
 setup(
     name='barsik',
-    version='0.8.3',
+    version='0.8.4',
     author='Ruslan Dolovaniuk',
     author_email='ruslan.dolovaniuk84@gmail.com',
     packages=find_packages(),
-    package_data={"barsik": []},
+    package_data={"barsik": ["py.typed"]},
+    zip_safe=False,
     description='Adapters set for basic software architecture development kit',
     install_requires=[
         "pydantic",
