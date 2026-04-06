@@ -25,7 +25,7 @@ class HttpSyncClient(RequestsClient, BaseHttpClient):
     def __init__(self, url: str, auth: AuthProvider | None = None):
         super().__init__(base_url=url)
 
-        self.session.headers.update({"Content-Type": "application/json"
+        self.session.headers.update({"Content-Type": "application/json"})
         if auth:
             self.session.headers.update(auth.get_headers())
 
