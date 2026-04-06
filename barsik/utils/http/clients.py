@@ -43,7 +43,7 @@ class HttpAsyncClient(AiohttpClient, BaseHttpClient):
             self.update_headers()
 
     def update_headers(self) -> None:
-        self._session.headers.update({"Content-Type": "application/json"
+        self._session.headers.update({"Content-Type": "application/json"})
         if self._auth:
             self._session.headers.update(self._auth.get_headers())
 
