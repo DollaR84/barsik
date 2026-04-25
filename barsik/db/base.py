@@ -70,14 +70,14 @@ class BaseDBAdapter(BaseAdapter["BaseDBAdapter"], ABC):
         return maker()  # pylint: disable=not-callable
 
     @classmethod
-    async def close_session(cls, session: SessionType) -> None:
+    async def close_session(cls, session: SessionType, force: bool = False) -> None:
         try:
             if isinstance(session, AsyncSession):
                 await session.close()
             elif isinstance(session, Session):
                 session.close()
 
-            if cls._engine:
+            if force and cls._engine:
                 if isinstance(cls._engine, AsyncEngine):
                     await cls._engine.dispose()
                 elif isinstance(cls._engine, Engine):
