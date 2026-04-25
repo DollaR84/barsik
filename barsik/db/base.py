@@ -1,55 +1,40 @@
 from __future__ import annotations
 
-from abc import ABC
+from abc import ABC, abstractmethod
 import logging
-from typing import Type
+from types import TracebackType
+from typing import Any, Callable, cast, Optional, Self, Type, Union
+
+from sqlalchemy.orm import Session, sessionmaker
+from sqlalchemy.engine import Engine
+from sqlalchemy.ext.declarative import declarative_base
+from sqlalchemy.ext.asyncio import AsyncEngine, AsyncSession, async_sessionmaker
+from sqlalchemy.exc import SQLAlchemyError
 
 from barsik.adapters import BaseAdapter
 from barsik.config import BaseConfig
 
-from sqlalchemy.ext.declarative import declarative_base
-from sqlalchemy.orm import sessionmaker
-from sqlalchemy.ext.asyncio import AsyncSession, async_sessionmaker
+
+EngineType = Union[Engine, AsyncEngine]
+SessionMakerType = Union["sessionmaker[Session]", "async_sessionmaker[AsyncSession]"]
+SessionType = Union[Session, AsyncSession]
 
 
-class BaseDBAdapter(BaseAdapter, ABC):
+class BaseDBAdapter(BaseAdapter["BaseDBAdapter"], ABC):
     _adapters: dict[str, Type[BaseDBAdapter]] = {}
 
-    _base = declarative_base()
-    _engine = None
-    _session_maker = None
+    base = declarative_base()
 
-    _is_async = None
-    _current_adapter = None
+    _engine: Optional[EngineType] = None
+    _session_maker: Optional[SessionMakerType] = None
 
-    @classmethod
-    @property
-    def base(cls):
-        return cls._base
+    _is_async: Optional[bool] = None
+    _current_adapter: Optional[Type[BaseDBAdapter]] = None
 
     @classmethod
-    @property
-    def engine(cls):
-        return cls._engine
-
-    @classmethod
-    @property
-    def session_maker(cls):
-        return cls._session_maker
-
-    @classmethod
-    @property
-    def current_adapter(cls):
-        return cls._current_adapter
-
-    @classmethod
-    @property
-    def is_async(cls):
-        return cls._is_async
-
-    @classmethod
-    def init(cls, cfg: BaseConfig, *names: list[str]):
+    def init(cls, cfg: BaseConfig, *names: str) -> Optional[Type[BaseDBAdapter]]:
         logger = logging.getLogger()
+
         for name in names:
             adapter = cls.get_adapter(name)
             if not adapter:
@@ -57,42 +42,69 @@ class BaseDBAdapter(BaseAdapter, ABC):
 
             try:
                 cls._engine = adapter.create_engine(cfg)
-                cls._is_async = getattr(cfg, name).is_async
+                config_node = getattr(cfg, name, None)
+                cls._is_async = getattr(config_node, "is_async", False) if config_node else False
             except Exception as error:
                 logger.error(error, exc_info=True)
                 raise ValueError("Error: failed to create engine") from error
 
-            if cls.is_async:
+            if cls._is_async:
                 cls._session_maker = async_sessionmaker(
-                    binds={cls.base: cls.engine},
+                    binds={cls.base: cls._engine},
                     autoflush=False,
                     expire_on_commit=False,
                 )
             else:
-                cls._session_maker = sessionmaker(binds={cls.base: cls.engine}, autoflush=False)
+                cls._session_maker = sessionmaker(binds={cls.base: cls._engine}, autoflush=False)
 
             cls._current_adapter = adapter
 
-        return cls.current_adapter
+        return cls._current_adapter
 
     @classmethod
-    def create_session(cls) -> sessionmaker | AsyncSession:
-        return cls.session_maker()
+    def create_session(cls) -> Any:
+        if cls._session_maker is None:
+            raise RuntimeError("Session maker is not initialized")
+
+        maker: Callable[[], SessionType] = cast(Callable[[], SessionType], cls._session_maker)
+        return maker()  # pylint: disable=not-callable
 
     @classmethod
-    async def close_session(cls, session):
+    async def close_session(cls, session: SessionType) -> None:
         try:
-            await session.close()
-            await cls.engine.dispose()
-        except Exception:
-            await session.invalidate()
+            if isinstance(session, AsyncSession):
+                await session.close()
+            elif isinstance(session, Session):
+                session.close()
 
-    def __init__(self):
-        self.session = None
+            if cls._engine:
+                if isinstance(cls._engine, AsyncEngine):
+                    await cls._engine.dispose()
+                elif isinstance(cls._engine, Engine):
+                    cls._engine.dispose()
 
-    async def __aenter__(self):
+        except SQLAlchemyError as e:
+            if isinstance(session, Session):
+                session.invalidate()
+            logging.error("Error closing session: %s", str(e))
+
+    def __init__(self) -> None:
+        self.session: Optional[Union[Session, AsyncSession]] = None
+
+    async def __aenter__(self) -> Self:
         self.session = self.create_session()
         return self
 
-    async def __aexit__(self, exc_type, exc_val, exc_tb):
-        await self.close_session(self.session)
+    async def __aexit__(
+            self,
+            exc_type: Optional[Type[BaseException]],
+            exc_val: Optional[BaseException],
+            exc_tb: Optional[TracebackType],
+    ) -> None:
+        if self.session:
+            await self.close_session(self.session)
+
+    @staticmethod
+    @abstractmethod
+    def create_engine(cfg: BaseConfig) -> EngineType:
+        raise NotImplementedError

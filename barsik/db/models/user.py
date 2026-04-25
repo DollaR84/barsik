@@ -1,10 +1,10 @@
-from ..mixins import TimeCreateMixin
-
 import sqlalchemy as sa
 import sqlalchemy.orm as so
 
+from ..mixins import TimeCreateMixin
 
-class BaseUser(TimeCreateMixin):
+
+class BaseUser(TimeCreateMixin):  # pylint: disable=too-few-public-methods
 
     chat_id: so.Mapped[int] = so.mapped_column(nullable=False, unique=True)
     username: so.Mapped[str | None] = so.mapped_column(sa.String(256), nullable=True)

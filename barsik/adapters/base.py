@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from abc import ABC
 import inspect
-from typing import Type, TypeVar
+from typing import Any, cast, Generic, Type, TypeVar
 
 from barsik.utils.text import paschal_case_to_snake_case, paschal_case_to_words
 
@@ -10,10 +10,10 @@ from barsik.utils.text import paschal_case_to_snake_case, paschal_case_to_words
 T = TypeVar("T", bound="BaseAdapter")
 
 
-class BaseAdapter(ABC):
+class BaseAdapter(ABC, Generic[T]):
     _adapters: dict[str, Type[T]]
 
-    def __init_subclass__(cls, is_abstract: bool = False, **kwargs):
+    def __init_subclass__(cls, is_abstract: bool = False, **kwargs: Any) -> None:
         if is_abstract:
             return
 
@@ -26,7 +26,7 @@ class BaseAdapter(ABC):
             if adapter_name in cls._adapters:
                 suffix = cls.get_suffix()
                 raise TypeError(f"{suffix.lower()} with name {cls.__name__} has already been registered")
-            cls._adapters[adapter_name] = cls
+            cls._adapters[adapter_name] = cast(Type[T], cls)
         super().__init_subclass__(**kwargs)
 
     @classmethod

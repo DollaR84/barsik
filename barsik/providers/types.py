@@ -2,22 +2,22 @@ from enum import Enum
 
 
 class Main(Enum):
-    CORE: str = "core"
-    GEO: str = "geo"
-    LOCALISATION: str = "localisation"
-    SERVICES: str = "services"
+    CORE = "core"
+    GEO = "geo"
+    LOCALISATION = "localisation"
+    SERVICES = "services"
 
 
 class DB(Enum):
-    SQLITE: str = "sqlite"
-    MYSQL: str = "mysql"
+    SQLITE = "sqlite"
+    MYSQL = "mysql"
 
 
 class Storage(Enum):
-    MEMORY: str = "memory"
-    REDIS: str = "redis"
+    MEMORY = "memory"
+    REDIS = "redis"
 
 
 class GUI(Enum):
-    TELEGRAM: str = "telegram"
-    WX: str = "wx"
+    TELEGRAM = "telegram"
+    WX = "wx"

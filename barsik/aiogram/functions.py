@@ -6,17 +6,23 @@ from barsik import schemas
 
 
 def get_user(message_or_callback_query: types.Message | types.CallbackQuery) -> schemas.User:
+    user = message_or_callback_query.from_user
+    if user is None:
+        raise RuntimeError("Event must have a from_user")
+
     if isinstance(message_or_callback_query, types.Message):
-        message = message_or_callback_query
+        chat_id = message_or_callback_query.chat.id
     else:
-        message = message_or_callback_query.message
+        if message_or_callback_query.message is None:
+            raise RuntimeError("callback_query.message must be set")
+        chat_id = message_or_callback_query.message.chat.id
 
     return schemas.User(
-        chat_id=message.chat.id,
-        username=message_or_callback_query.from_user.username,
-        first_name=message_or_callback_query.from_user.first_name,
-        last_name=message_or_callback_query.from_user.last_name,
-        lang=message_or_callback_query.from_user.language_code,
+        chat_id=chat_id,
+        username=user.username,
+        first_name=user.first_name,
+        last_name=user.last_name,
+        lang=user.language_code,
     )
 
 
@@ -27,5 +33,5 @@ def get_name(user: User) -> str:
     if not name:
         name = user.username
     if not name:
-        name = user.chat_id
+        name = str(user.chat_id)
     return name

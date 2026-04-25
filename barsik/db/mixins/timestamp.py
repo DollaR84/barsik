@@ -4,7 +4,7 @@ import sqlalchemy as sa
 import sqlalchemy.orm as so
 
 
-class TimeCreateMixin:
+class TimeCreateMixin:  # pylint: disable=too-few-public-methods
 
     created_at: so.Mapped[datetime] = so.mapped_column(
         sa.DateTime(timezone=True),
@@ -13,7 +13,7 @@ class TimeCreateMixin:
     )
 
 
-class TimeUpdateMixin:
+class TimeUpdateMixin:  # pylint: disable=too-few-public-methods
 
     updated_at: so.Mapped[datetime] = so.mapped_column(
         sa.DateTime(timezone=True),

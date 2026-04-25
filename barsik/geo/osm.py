@@ -1,9 +1,6 @@
 from contextlib import asynccontextmanager
-from functools import partial
 import logging
-from typing import Literal
-
-from barsik.config import BaseConfig
+from typing import Literal, overload
 
 from geopy import Location
 from geopy.adapters import AioHTTPAdapter
@@ -16,7 +13,9 @@ from geopy.distance import distance as geopy_distance
 from shapely.geometry import Point, Polygon, mapping
 from shapely.ops import transform
 
-import pyproj
+from pyproj import Transformer
+
+from barsik.config import BaseConfig
 
 
 class GeoOSM:
@@ -26,6 +25,9 @@ class GeoOSM:
 
     @asynccontextmanager
     async def get_locator(self) -> Nominatim:
+        if not hasattr(self.cfg, "geo"):
+            raise RuntimeError("geo config not initialized")
+
         yield Nominatim(
             user_agent=self.cfg.geo.app_name,
             timeout=self.cfg.geo.location_timeout,
@@ -39,7 +41,30 @@ class GeoOSM:
 
     async def get_location(self, coordinates: str, lang: str | bool = False) -> str:
         location = await self._get_location(coordinates, lang)
-        return location.raw["display_name"]
+        result: str = location.raw["display_name"]
+        return result
+
+    @overload
+    async def get_address(
+            self,
+            coordinates: str,
+            lang: str = "en",
+            return_data: Literal["full"] = "full",
+    ) -> dict[str, str]:
+        ...
+
+    @overload
+    async def get_address(
+            self,
+            coordinates: str,
+            lang: str = "en",
+            return_data: Literal[
+                "country", "country_code", "city",
+                "municipality", "district", "state", "postcode",
+                "road", "residential", "suburb", "borough",
+            ] = "city",
+    ) -> str:
+        ...
 
     async def get_address(
             self, coordinates: str,
@@ -49,26 +74,53 @@ class GeoOSM:
                 "municipality", "district", "state", "postcode",
                 "road", "residential", "suburb", "borough",
             ] = "full",
-    ) -> dict | str:
+    ) -> dict[str, str] | str:
         location = await self._get_location(coordinates, lang)
-        address = location.raw["address"]
+        address: dict[str, str] = location.raw["address"]
         if return_data == "full":
             return address
-        return address.get(return_data)
+
+        data: str | None = address.get(return_data)
+        if data is None:
+            data = ""
+        return data
+
+    @overload
+    async def search(self, search_text: str, lang: str | bool, exactly_one: Literal[False]) -> list[str] | None:
+        ...
+
+    @overload
+    async def search(self, search_text: str, lang: str | bool, exactly_one: Literal[True]) -> str | None:
+        ...
 
     async def search(
             self, search_text: str,
             lang: str | bool = False,
-            exactly_one: bool = False
-    ) -> str | list[str]:
-        return await self._search(search_text, lang, exactly_one=exactly_one, return_type="address")
+            exactly_one: bool = False,
+    ) -> str | list[str] | None:
+        # pylint: disable=simplifiable-if-expression
+        results = await self._search(search_text, lang, exactly_one=True if exactly_one else False)
+
+        if not results:
+            return None
+        if isinstance(results, Location):
+            result: str = results.address
+            return result
+        return [result.address for result in results]
+
+    @overload
+    async def _search(self, search_text: str, lang: str | bool, exactly_one: Literal[False]) -> list[Location] | None:
+        ...
+
+    @overload
+    async def _search(self, search_text: str, lang: str | bool, exactly_one: Literal[True]) -> Location | None:
+        ...
 
     async def _search(
             self, search_text: str,
             lang: str | bool = False,
             exactly_one: bool = False,
-            return_type: Literal["raw", "address"] = "raw"
-    ) -> str | list[str] | Location:
+    ) -> Location | list[Location] | None:
         async with self.get_locator() as locator:
             try:
                 results = await locator.geocode(search_text, exactly_one=exactly_one, language=lang)
@@ -76,9 +128,6 @@ class GeoOSM:
                 logger = logging.getLogger()
                 logger.error("geocode fail with error: %s", e)
                 results = None
-            finally:
-                if results and return_type == "address":
-                    results = results.address if exactly_one else [result.address for result in results]
 
             return results
 
@@ -86,92 +135,109 @@ class GeoOSM:
             self,
             address: str,
             lang: str | bool = False
-    ) -> tuple[str, str] | None:
-        result = await self._search(address, lang, exactly_one=True)
-        if result:
-            result = [result.latitude, result.longitude]
+    ) -> list[float] | None:
+        result = None
+        location = await self._search(address, lang, exactly_one=True)
+        if location:
+            if isinstance(location, list):
+                location = location[0]
+            result = [location.latitude, location.longitude]
         return result
 
     def distance(
             self,
-            point1: list, point2: list,
+            point1: list[str | float],
+            point2: list[str | float],
             units: Literal["km", "m", "mi"] = "km",
             ndigits: int = 3,
-    ) -> float | str:
-        if isinstance(point1[0], float) and isinstance(point1[1], float):
-            point1 = lonlat(*point1)
-        else:
-            point1 = ", ".join(point1)
+    ) -> float:
+        p1: tuple[float, ...] = self.convert_point(point1)
+        p_1 = lonlat(*p1)
 
-        if isinstance(point2[0], float) and isinstance(point2[1], float):
-            point2 = lonlat(*point2)
-        else:
-            point2 = ", ".join(point2)
+        p2: tuple[float, ...] = self.convert_point(point2)
+        p_2 = lonlat(*p2)
 
-        dist = geopy_distance(point1, point2)
-        try:
-            dist = getattr(dist, units)
-        except Exception:
-            dist = dist.km
+        dist_obj = geopy_distance(p_1, p_2)
+        dist = getattr(dist_obj, units)
+        if dist is None:
+            dist = dist_obj.km
 
-        if dist < 1:
-            dist = dist.m
+        if dist and dist < 1:
+            dist = dist_obj.m
             ndigits = 2
 
         dist = round(dist, ndigits=ndigits)
         return float(dist)
 
-    def from_polygon(self, polygon: Polygon) -> list:
+    def from_polygon(self, polygon: Polygon) -> list[str]:
         data = mapping(polygon)
         return list(data["coordinates"][0])
 
-    def to_polygon(self, points: list) -> Polygon:
-        return Polygon(points)
+    def to_polygon(self, points: list[list[str | float]]) -> Polygon:
+        clean_points = [self.convert_point(p, "tuple") for p in points]
+        return Polygon(clean_points)
 
-    def check_inside_polygon(self, polygon: list, point: list, is_swap_coordinates: bool = True) -> bool:
-        polygon = self.to_polygon(polygon)
-
-        if isinstance(point[0], str) and isinstance(point[1], str):
-            point = list(map(float, point))
+    def check_inside_polygon(
+            self,
+            polygon: list[list[str | float]],
+            point: list[str | float],
+            is_swap_coordinates: bool = True,
+    ) -> bool:
+        polygon_ = self.to_polygon(polygon)
+        p = self.convert_point(point, "list")
 
         if is_swap_coordinates:
-            point = Point(*point)
+            point_obj = Point(*p)
         else:
-            point = Point(*[point[1], point[0]])
+            point_obj = Point(*[p[1], p[0]])
 
-        return polygon.contains(point)
+        return bool(polygon_.contains(point_obj))
 
-    def convert_point(self, point: list, return_type: Literal["list", "point"]):
-        if isinstance(point[0], str) and isinstance(point[1], str):
-            point = list(map(float, point))
+    @overload
+    def convert_point(self, point: list[str | float], return_type: Literal["tuple"] = "tuple") -> tuple[float, ...]:
+        ...
 
+    @overload
+    def convert_point(self, point: list[str | float], return_type: Literal["list"]) -> list[float]:
+        ...
+
+    @overload
+    def convert_point(self, point: list[str | float], return_type: Literal["point"]) -> Point:
+        ...
+
+    def convert_point(
+            self,
+            point: list[str | float],
+            return_type: Literal["tuple", "list", "point"] = "tuple",
+    ) -> tuple[float, ...] | list[float] | Point:
+        p = list(map(float, point))
+
+        if return_type == "tuple":
+            return tuple(p)
         if return_type == "list":
-            return point
-        elif return_type == "point":
-            return Point(point)
+            return p
+        if return_type == "point":
+            return Point(*p)
+        raise ValueError("incorrect set return type")
 
-    def check_inside_distance1(self, center_point: list, distance: int, point: list) -> bool:
-        center_point = self.convert_point(center_point, "list")
-        point = self.convert_point(point, "list")
+    def check_inside_distance1(self, center_point: list[str | float], distance: int, point: list[str | float]) -> bool:
+        center = self.convert_point(center_point, "point")
+        p = self.convert_point(point, "point")
 
-        buffer = self.buffer_in_meters(center_point, distance)
-        return buffer.contains(point)  # point.within(buffer)
+        buffer = self.buffer_in_meters(center, distance)
+        return buffer.contains(p)  # p.within(buffer)
 
-    def buffer_in_meters(self, center_point: Point, radius: int):
-        proj_meters = pyproj.Proj(init="epsg:3857")
-        proj_latlng = pyproj.Proj(init="epsg:4326")
+    def buffer_in_meters(self, center_point: Point, radius: int) -> Polygon:
+        transformer_to = Transformer.from_crs("EPSG:4326", "EPSG:3857", always_xy=True)
+        transformer_back = Transformer.from_crs("EPSG:3857", "EPSG:4326", always_xy=True)
 
-        project_to_meters = partial(pyproj.transform, proj_latlng, proj_meters)
-        project_to_latlng = partial(pyproj.transform, proj_meters, proj_latlng)
-
-        pt_meters = transform(project_to_meters, center_point)
+        pt_meters = transform(transformer_to.transform, center_point)
         buffer_meters = pt_meters.buffer(radius)
-        buffer_latlng = transform(project_to_latlng, buffer_meters)
 
-        return buffer_latlng
+        return transform(transformer_back.transform, buffer_meters)
 
-    def check_inside_distance2(self, center_point: list, distance: int, point: list) -> bool:
-        center_point = self.convert_point(center_point, "point")
-        point = self.convert_point(point, "point")
+    def check_inside_distance2(self, center_point: list[str | float], distance: int, point: list[str | float]) -> bool:
+        center = self.convert_point(center_point, "point")
+        p = self.convert_point(point, "point")
 
-        return center_point.distance(point) < distance
+        return center.distance(p) < distance

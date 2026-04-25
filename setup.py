@@ -2,7 +2,7 @@ from setuptools import setup, find_packages
 
 setup(
     name='barsik',
-    version='0.8.8',
+    version='1.0.0',
     author='Ruslan Dolovaniuk',
     author_email='ruslan.dolovaniuk84@gmail.com',
     packages=find_packages(),
@@ -38,7 +38,7 @@ setup(
             "adaptix",
             "aiohttp",
             "requests",
-            "dataclass_rest",
+            "descanso",
         ]
     }
 )

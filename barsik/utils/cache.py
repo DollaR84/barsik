@@ -1,5 +1,5 @@
 from functools import lru_cache
-from typing import Type, TypeVar, Any
+from typing import Type, TypeVar
 
 from pydantic_settings import BaseSettings
 

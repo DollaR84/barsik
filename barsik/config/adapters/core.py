@@ -1,4 +1,5 @@
 from dataclasses import dataclass
+from typing import Type
 
 from .base import BaseConfigAdapter
 
@@ -9,4 +10,4 @@ class CoreData:
 
 
 class CoreAdapter(BaseConfigAdapter):
-    data: CoreData = CoreData
+    data: Type[CoreData] = CoreData

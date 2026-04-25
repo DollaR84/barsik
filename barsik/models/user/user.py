@@ -4,7 +4,7 @@ from datetime import datetime
 from ..base import Base
 
 
-@dataclass
+@dataclass(slots=True)
 class User(Base):
     chat_id: int
 

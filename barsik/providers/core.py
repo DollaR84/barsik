@@ -1,14 +1,11 @@
-try:
-    from barsik.geo import GeoOSM
-except ImportError:
-    class GeoOSM:
-        pass
+from typing import Optional
 
+from dishka import Provider, Scope, provide
+
+from barsik.geo import GeoOSM
 from barsik.localisation import Localisation
 from barsik.storage import MemoryStorage, RedisStorage
 from barsik.config import BaseConfig
-
-from dishka import Provider, Scope, provide
 
 
 class CoreProvider(Provider):
@@ -16,8 +13,13 @@ class CoreProvider(Provider):
     def __init__(self, config: BaseConfig):
         super().__init__()
 
-        if config.is_localisation:
-            if config.is_redis:
+        self.localisation: Optional[Localisation]
+        self.geo: Optional[GeoOSM]
+
+        if config.is_localisation and hasattr(config, "localisation"):
+            self.storage: RedisStorage | MemoryStorage
+
+            if config.is_redis and hasattr(config, "redis"):
                 self.storage = RedisStorage(
                     host=config.redis.host,
                     port=config.redis.port,
@@ -28,16 +30,20 @@ class CoreProvider(Provider):
             else:
                 self.storage = MemoryStorage()
 
-            self.localisation: Localisation = Localisation(config, self.storage)
+            self.localisation = Localisation(config, self.storage)
         else:
             self.localisation = None
 
-        self.geo: GeoOSM = GeoOSM(config) if config.is_geo else None
+        self.geo = GeoOSM(config) if config.is_geo else None
 
     @provide(scope=Scope.APP)
     def get_localisation(self) -> Localisation:
+        if not self.localisation:
+            raise RuntimeError("localisation is not initialized")
         return self.localisation
 
     @provide(scope=Scope.APP)
     def get_geo(self) -> GeoOSM:
+        if not self.geo:
+            raise RuntimeError("geo is not initialized")
         return self.geo

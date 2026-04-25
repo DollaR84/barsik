@@ -1,5 +1,6 @@
 from dataclasses import dataclass
 import os
+from typing import Type
 
 from .base import BaseConfigAdapter
 
@@ -11,9 +12,9 @@ class LocalisationData:
     languages_file_path_json: str = "languages.json"
     languages_file_path_dat: str = "languages.dat"
 
-    redis_db: int = os.getenv("LOCALISATION_REDIS_DB")
+    redis_db: int = int(os.getenv("LOCALISATION_REDIS_DB", "7"))
     redis_prefix: str = "langs"
 
 
 class LocalisationAdapter(BaseConfigAdapter):
-    data: LocalisationData = LocalisationData
+    data: Type[LocalisationData] = LocalisationData

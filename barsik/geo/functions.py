@@ -5,17 +5,19 @@ from aiogram import types
 
 def location_to_str(message: types.Message) -> str:
     coordinates = message.location
-    return ", ".join([str(coordinates["latitude"]), str(coordinates["longitude"])])
+    if not coordinates:
+        raise ValueError("invalid parameters coordinates")
+    return ", ".join([str(coordinates.latitude), str(coordinates.longitude)])
 
 
-def polygon_from_string(polygon: str, is_swap_coordinates: bool) -> list:
+def polygon_from_string(polygon: str, is_swap_coordinates: bool) -> list[list[float]]:
     polygon = polygon.strip()
     if polygon.startswith("POLYGON"):
         polygon = polygon.replace("POLYGON", "")
     polygon = polygon.replace("(", "").replace(")", "")
 
-    points = polygon.split(",")
-    points = [list(map(float, point.split(" "))) for point in points]
+    points_list = polygon.split(",")
+    points = [list(map(float, point.split(" "))) for point in points_list]
 
     if is_swap_coordinates:
         for point in points:

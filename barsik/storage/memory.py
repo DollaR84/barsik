@@ -1,21 +1,21 @@
 import time
-from typing import Any, Optional
+from typing import Any
 
 from .base import BaseStorage
 
 
 class MemoryStorage(BaseStorage):
 
-    async def wait_closed(self):
+    async def wait_closed(self) -> None:
         pass
 
-    async def close(self):
+    async def close(self) -> None:
         self.data.clear()
 
-    async def get_data(self, key: str | None = None) -> dict:
+    async def get_data(self, key: str | None = None) -> dict[str, Any]:
         return self.get_local_data(key) if key else self.data
 
-    async def get(self, name: str, key: str | None = None) -> str | None:
+    async def get(self, name: str, key: str | None = None) -> Any:
         data = await self.get_data(key)
         if not data:
             return None
@@ -31,7 +31,7 @@ class MemoryStorage(BaseStorage):
 
         return value
 
-    async def get_list(self, *names: str, key: str | None = None) -> dict[str, str]:
+    async def get_list(self, *names: str, key: str | None = None) -> dict[str, Any]:
         data = await self.get_data(key)
         if not data:
             return {}
@@ -44,41 +44,42 @@ class MemoryStorage(BaseStorage):
 
     async def update_data(
             self,
-            data: dict | None = None,
+            data: dict[str, Any] | None = None,
             key: str | None = None,
-            **kwargs
-    ):
+            **kwargs: Any,
+    ) -> None:
         if data is None:
             data = {}
         data.update(**kwargs)
         await self.set_data(data, key)
 
-    async def set_data(self, data: dict, key: str | None = None):
+    async def set_data(self, data: dict[str, Any], key: str | None = None) -> None:
         if key and not self.data.get(key):
             self.data[key] = {}
         formatted = {k: (v, None) for k, v in data.items()}
         (await self.get_data(key)).update(formatted)
 
-    async def set(self, name: str, value: str, key: str | None = None, ex: int | None = None):
+    async def set(self, name: str, value: Any, key: str | None = None, ex: int | None = None) -> None:
         expire_at = time.time() + ex if ex else None
         stored_value = (value, expire_at)
         if key and not self.data.get(key):
             self.data[key] = {}
         (await self.get_data(key)).update({name: stored_value})
 
-    async def delete(self, *names: str, key: str | None = None):
+    async def delete(self, *names: str, key: str | None = None) -> None:
         obj = await self.get_data(key)
         for name in names:
             obj.pop(name, None)
 
-    async def reset_data(self, key: str | None = None):
+    async def reset_data(self, key: str | None = None) -> None:
         await self._cleanup(key)
 
-    async def _cleanup(self, key: str | None = None):
+    async def _cleanup(self, key: str | None = None) -> None:
         (await self.get_data(key)).clear()
 
-    async def clear(self):
+    async def clear(self) -> None:
         self.data.clear()
 
     async def keys(self, key: str | None = None, pattern: str = "*") -> list[str]:
-        return list(self.data.get(key).keys()) if key else list(self.data.keys())
+        section = self.data.get(key) if key else None
+        return list(section.keys()) if key and section else list(self.data.keys())

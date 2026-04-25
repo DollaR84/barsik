@@ -1,16 +1,16 @@
 from __future__ import annotations
 
 from abc import ABC
-from typing import Type
+from typing import Any, Type
 
 from barsik.adapters import BaseAdapter
 from barsik.config import BaseConfig
 
 
-class BaseUIAdapter(BaseAdapter, ABC):
+class BaseUIAdapter(BaseAdapter["BaseUIAdapter"], ABC):
     _adapters: dict[str, Type[BaseUIAdapter]] = {}
 
-    def __init__(self, cfg: BaseConfig, *names: list[str]):
+    def __init__(self, cfg: BaseConfig, *names: str):
         self.cfg = cfg
         self.adapter = None
 
@@ -21,5 +21,6 @@ class BaseUIAdapter(BaseAdapter, ABC):
 
             self.adapter = adapter
 
-    def register(self, **kwargs):
-        self.adapter.register(**kwargs)
+    def register(self, **kwargs: Any) -> None:
+        if self.adapter:
+            self.adapter.register(**kwargs)

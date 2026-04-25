@@ -4,11 +4,11 @@ from aiogram.fsm.storage.redis import DefaultKeyBuilder, RedisStorage
 
 from aiogram_dialog import setup_dialogs
 
+from dishka import Provider, Scope, provide
+
 from barsik.aiogram.handlers import BaseHandlers
 from barsik.config import BaseConfig
 from barsik.ui import BaseUI
-
-from dishka import Provider, Scope, provide
 
 
 class BotProvider(Provider):
@@ -16,19 +16,23 @@ class BotProvider(Provider):
     def __init__(self, config: BaseConfig, ui: BaseUI):
         super().__init__()
 
-        if config.is_redis:
-            redis_url = f"redis://{config.redis.host}:{config.redis.port}/{config.telegram.redis_db}"
+        self.storage: RedisStorage | MemoryStorage
+        if config.is_redis and hasattr(config, "redis"):
+            db_num = config.telegram.redis_db if hasattr(config, "telegram") else 6
+            decode_responses = config.telegram.redis_decode_responses if hasattr(config, "telegram") else False
+            redis_url = f"redis://{config.redis.host}:{config.redis.port}/{db_num}"
+
             self.storage = RedisStorage.from_url(
                 url=redis_url,
                 connection_kwargs={
-                    "decode_responses": config.telegram.redis_decode_responses,
+                    "decode_responses": decode_responses,
                 },
                 key_builder=DefaultKeyBuilder(with_destiny=True) if config.redis.is_key_builder else None,
             )
         else:
             self.storage = MemoryStorage()
 
-        self.bot: Bot = Bot(token=config.telegram.token)
+        self.bot: Bot = Bot(token=config.telegram.token if hasattr(config, "telegram") else "")
         self.dp: Dispatcher = Dispatcher(storage=self.storage)
         self.router: Router = Router()
 
