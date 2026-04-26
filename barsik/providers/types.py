@@ -11,6 +11,7 @@ class Main(Enum):
 class DB(Enum):
     SQLITE = "sqlite"
     MYSQL = "mysql"
+    POSTGRES = "postgres"
 
 
 class Storage(Enum):
