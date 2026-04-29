@@ -1,4 +1,4 @@
-from .interface import BaseConfig
+from .base import BaseConfig
 
 
 __all__ = [
