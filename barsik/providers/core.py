@@ -19,12 +19,12 @@ class CoreProvider(Provider):
     @provide(scope=Scope.APP)
     def get_storage(self, config: BaseConfig) -> BarsikStorageType:
         storage: BarsikStorageType
-        if config.is_redis and hasattr(config, "redis"):
+        if config.is_redis and config.redis is not None:
             storage = RedisStorage(
                 host=config.redis.host,
                 port=config.redis.port,
-                db=config.localisation.redis_db if hasattr(config, "localisation") else 7,
-                prefix=config.localisation.redis_prefix if hasattr(config, "localisation") else "lang",
+                db=config.localisation.redis_db if config.localisation is not None else 7,
+                prefix=config.localisation.redis_prefix if config.localisation is not None else "langs",
                 pool_size=config.redis.pool_size,
             )
         else:
@@ -34,14 +34,14 @@ class CoreProvider(Provider):
 
     @provide(scope=Scope.APP)
     def get_localisation(self, config: BaseConfig, storage: BarsikStorageType) -> Localisation:
-        if not config.is_localisation or not hasattr(config, "localisation"):
+        if config.is_localisation or config.localisation is None:
             raise RuntimeError("localisation config not be initialized")
 
-        return Localisation(config, storage)
+        return Localisation(config.localisation, storage)
 
     @provide(scope=Scope.APP)
     def get_geo(self, config: BaseConfig) -> GeoOSM:
-        if not config.is_geo or not hasattr(config, "geo"):
+        if not config.is_geo or config.geo is None:
             raise RuntimeError("geo is not initialized")
 
-        return GeoOSM(config)
+        return GeoOSM(config.core.app_name, config.geo)

@@ -4,10 +4,11 @@ from typing import Type
 from .base import BaseConfigAdapter
 
 
-@dataclass
-class GeoData:
+@dataclass(frozen=True, slots=True)
+class GeoConfig:
     location_timeout: int = 5
 
 
-class GeoAdapter(BaseConfigAdapter):
-    data: Type[GeoData] = GeoData
+class GeoConfigAdapter(BaseConfigAdapter[GeoConfig]):
+    data: Type[GeoConfig] = GeoConfig
+    optional = True

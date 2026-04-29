@@ -1,13 +1,13 @@
 from dataclasses import dataclass
-from typing import Any, Type
+from typing import Type
 
 from .base import BaseConfigAdapter
 
 
-@dataclass
-class ServicesData:
-    data: Any = None
+@dataclass(frozen=True, slots=True)
+class BaseServicesConfig:
+    pass
 
 
-class ServicesAdapter(BaseConfigAdapter):
-    data: Type[ServicesData] = ServicesData
+class ServicesConfigAdapter(BaseConfigAdapter[BaseServicesConfig]):
+    data: Type[BaseServicesConfig] = BaseServicesConfig

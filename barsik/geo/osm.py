@@ -15,22 +15,20 @@ from shapely.ops import transform
 
 from pyproj import Transformer
 
-from barsik.config import BaseConfig
+from barsik.config.adapters import GeoConfig
 
 
 class GeoOSM:
 
-    def __init__(self, config: BaseConfig):
-        self.cfg: BaseConfig = config
+    def __init__(self, app_name: str, config: GeoConfig):
+        self.app_name = app_name
+        self.config: GeoConfig = config
 
     @asynccontextmanager
     async def get_locator(self) -> Nominatim:
-        if not hasattr(self.cfg, "geo"):
-            raise RuntimeError("geo config not initialized")
-
         yield Nominatim(
-            user_agent=self.cfg.geo.app_name,
-            timeout=self.cfg.geo.location_timeout,
+            user_agent=self.app_name,
+            timeout=self.config.location_timeout,
             adapter_factory=AioHTTPAdapter,
         )
 

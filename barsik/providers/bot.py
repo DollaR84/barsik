@@ -24,9 +24,9 @@ class BotProvider(Provider):
     @provide(scope=Scope.APP)
     def get_storage(self, config: BaseConfig) -> BotStorageType:
         storage: BotStorageType
-        if config.is_redis and hasattr(config, "redis"):
-            db_num = config.telegram.redis_db if hasattr(config, "telegram") else 6
-            decode_responses = config.telegram.redis_decode_responses if hasattr(config, "telegram") else False
+        if config.is_redis and config.redis is not None:
+            db_num = config.bot.redis_db if config.bot else 6
+            decode_responses = config.bot.redis_decode_responses if config.bot else False
             redis_url = f"redis://{config.redis.host}:{config.redis.port}/{db_num}"
 
             storage = RedisStorage.from_url(
@@ -43,10 +43,10 @@ class BotProvider(Provider):
 
     @provide(scope=Scope.APP)
     def get_bot(self, config: BaseConfig) -> Bot:
-        if not hasattr(config, "telegram"):
+        if config.bot is None:
             raise RuntimeError("telegram config not be initialized")
 
-        return Bot(token=config.telegram.token)
+        return Bot(token=config.bot.token)
 
     @provide(scope=Scope.APP)
     def get_dp(self, storage: BotStorageType, router: Router, ui: BaseUI) -> Dispatcher:

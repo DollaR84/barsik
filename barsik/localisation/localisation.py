@@ -6,7 +6,7 @@ from typing import Any, cast, NotRequired, TypedDict
 
 import aiofiles
 
-from barsik.config import BaseConfig
+from barsik.config.adapters import LocalisationConfig
 from barsik.storage import MemoryStorage
 from barsik.storage.base import BaseStorage
 
@@ -20,13 +20,13 @@ class Localisation:
 
     def __init__(
             self,
-            config: BaseConfig,
+            config: LocalisationConfig,
             storage: BaseStorage | None = None,
     ):
-        if not hasattr(config, "localisation"):
+        if not config:
             raise RuntimeError("localisation config not be initialized")
 
-        self.config = config.localisation
+        self.config = config
         self.current: str = self.config.current_language
 
         self.supported: dict[str, str] = {}

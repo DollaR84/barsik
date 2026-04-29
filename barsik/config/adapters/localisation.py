@@ -1,20 +1,20 @@
 from dataclasses import dataclass
-import os
 from typing import Type
 
 from .base import BaseConfigAdapter
 
 
-@dataclass
-class LocalisationData:
+@dataclass(frozen=True, slots=True)
+class LocalisationConfig:
     current_language: str = "uk"
 
     languages_file_path_json: str = "languages.json"
     languages_file_path_dat: str = "languages.dat"
 
-    redis_db: int = int(os.getenv("LOCALISATION_REDIS_DB", "7"))
+    redis_db: int = 7
     redis_prefix: str = "langs"
 
 
-class LocalisationAdapter(BaseConfigAdapter):
-    data: Type[LocalisationData] = LocalisationData
+class LocalisationConfigAdapter(BaseConfigAdapter[LocalisationConfig]):
+    data: Type[LocalisationConfig] = LocalisationConfig
+    optional = True

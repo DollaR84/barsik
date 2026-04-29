@@ -1,18 +1,25 @@
 from dataclasses import dataclass
-import os
 from typing import Type
 
 from .base import BaseConfigAdapter
 
 
-@dataclass
-class SqliteData:
-    sqlalchemy_url: str = ":///".join(["sqlite", os.getenv("SQLITE_PATH", "")])
-    sqlalchemy_url_async: str = ":///".join(["sqlite+aiosqlite", os.getenv("SQLITE_PATH", "")])
-
+@dataclass(frozen=True, slots=True)
+class SqliteConfig:
+    path: str = "data.db"
     debug_sqlalchemy: bool = False
     is_async: bool = True
 
+    @property
+    def uri(self) -> str:
+        return f"sqlite:///{self.path}"
 
-class SqliteAdapter(BaseConfigAdapter):
-    data: Type[SqliteData] = SqliteData
+    @property
+    def async_uri(self) -> str:
+        return f"sqlite+aiosqlite:///{self.path}"
+
+
+class SqliteConfigAdapter(BaseConfigAdapter[SqliteConfig]):
+    data: Type[SqliteConfig] = SqliteConfig
+    section_name = "db"
+    optional = True

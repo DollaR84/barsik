@@ -1,15 +1,21 @@
-import asyncio
 from abc import ABC, abstractmethod
-import sys
+import asyncio
+import inspect
 import json
-from typing import Any, Optional
+from typing import Any, Awaitable, Optional, TypeVar, Union
+
+from redis import asyncio as aioredis
 
 from .base import BaseStorage
 
-if sys.version_info >= (3, 11):
-    from redis import asyncio as aioredis
-else:
-    import aioredis
+
+T = TypeVar("T")
+
+
+async def maybe_await(value: Union[T, Awaitable[T]]) -> T:
+    if inspect.isawaitable(value):
+        return await value
+    return value
 
 
 class AioRedisAdapterBase(ABC):
@@ -27,9 +33,9 @@ class AioRedisAdapterBase(ABC):
     ):
         self._host = host
         self._port = port
-        self._db = db
+        self._db = db or 0
         self._password = password
-        self._ssl = ssl
+        self._ssl = ssl or False
         self._pool_size = pool_size
         self._kwargs = kwargs
         self._prefix = (prefix,)
@@ -105,9 +111,9 @@ class AioRedisAdapterV2(AioRedisAdapterBase):
         data = {k: json.dumps({"value": v}) for k, v in data.items()}
 
         if key:
-            await self._redis.hset(key, mapping=data)
+            await maybe_await(self._redis.hset(key, mapping=data))
         else:
-            await self._redis.mset(data)
+            await maybe_await(self._redis.mset(data))
 
     async def set(
             self, name: str,
@@ -121,21 +127,21 @@ class AioRedisAdapterV2(AioRedisAdapterBase):
         value = json.dumps({"value": value})
 
         if key:
-            await self._redis.hset(key, key=name, value=value)
+            await maybe_await(self._redis.hset(key, key=name, value=value))
             if ex:
-                await self._redis.expire(key, ex)
+                await maybe_await(self._redis.expire(key, ex))
 
         else:
-            await self._redis.set(name, value, ex=ex)
+            await maybe_await(self._redis.set(name, value, ex=ex))
 
     async def get(self, name: str, key: str | None = None) -> Any:
         if self._redis is None:
             return None
 
         if key:
-            value = await self._redis.hget(key, name)
+            value = await maybe_await(self._redis.hget(key, name))
         else:
-            value = await self._redis.get(name)
+            value = await maybe_await(self._redis.get(name))
 
         return json.loads(value).get("value") if value else None
 
@@ -144,20 +150,19 @@ class AioRedisAdapterV2(AioRedisAdapterBase):
             return []
 
         async with self._redis.pipeline(transaction=True) as pipe:
-            query = pipe
             for name in names:
                 if key:
-                    query = query.hget(key, name)
+                    pipe.hget(key, name)
                 else:
-                    query = query.get(name)
-            values = await query.execute()
+                    pipe.get(name)
+            values = await pipe.execute()
         return [json.loads(value).get("value") if value else None for value in values]
 
     async def get_data(self, key: str | None = None) -> dict[str, Any]:
         if not key or not self._redis:
             return {}
 
-        data = await self._redis.hgetall(key)
+        data = await maybe_await(self._redis.hgetall(key))
 
         return {k: json.loads(v).get("value") for k, v in data.items()}
 
@@ -166,17 +171,17 @@ class AioRedisAdapterV2(AioRedisAdapterBase):
             return
 
         if key:
-            await self._redis.hdel(key, *names)
+            await maybe_await(self._redis.hdel(key, *names))
         else:
-            await self._redis.delete(*names)
+            await maybe_await(self._redis.delete(*names))
 
     async def keys(self, key: str | None = None, pattern: str = "*") -> list[str]:
         if self._redis is None:
             return []
 
         if key:
-            return list(await self._redis.hkeys(key))
-        return list(await self._redis.keys(pattern))
+            return list(await maybe_await(self._redis.hkeys(key)))
+        return list(await maybe_await(self._redis.keys(pattern)))
 
 
 class RedisStorage(BaseStorage):

@@ -2,29 +2,33 @@ from setuptools import setup, find_packages
 
 setup(
     name='barsik',
-    version='1.1.0',
+    version='1.2.0',
     author='Ruslan Dolovaniuk',
     author_email='ruslan.dolovaniuk84@gmail.com',
     packages=find_packages(),
     package_data={"barsik": ["py.typed"]},
     zip_safe=False,
-    description='Adapters set for basic software architecture development kit',
+    description="Adapters set for basic software architecture development kit",
+    python_requires=">=3.12",
     install_requires=[
+        "dishka",
+        "adaptix",
+        "dature",
         "pydantic",
-        "dishka"
+        "pydantic-settings",
     ],
     extras_require={
         "bot": [
             "aiogram",
             "aiogram-dialog",
-            "aioredis",
+            "redis",
             "aiofiles",
         ],
         "db": [
             "sqlalchemy"
         ],
         "redis": [
-            "aioredis",
+            "redis",
         ],
         "localisation": [
             "aiofiles",
@@ -35,7 +39,6 @@ setup(
             "pyproj",
         ],
         "http": [
-            "adaptix",
             "aiohttp",
             "requests",
             "descanso",
