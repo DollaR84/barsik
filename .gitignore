@@ -12,4 +12,5 @@ dist/
 .mypy.ini
 *.log
 *.dat
+*.bat
 *.service
