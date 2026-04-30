@@ -1,4 +1,3 @@
-from dataclasses import dataclass
 from typing import Optional
 
 from barsik.config.adapters import (
@@ -13,7 +12,6 @@ from barsik.config.adapters import (
 from .adapters.base import BaseConfigAdapter
 
 
-@dataclass(slots=True, init=False)
 class BaseConfig:
     core: CoreConfig
     geo: Optional[GeoConfig] = None
@@ -28,12 +26,12 @@ class BaseConfig:
 
     @property
     def is_redis(self) -> bool:
-        return bool(self.redis and self.redis.is_exist)
+        return self.redis is not None and self.redis.is_exist
 
     @property
     def is_localisation(self) -> bool:
-        return bool(self.localisation)
+        return self.localisation is not None
 
     @property
     def is_geo(self) -> bool:
-        return bool(self.geo)
+        return self.geo is not None
