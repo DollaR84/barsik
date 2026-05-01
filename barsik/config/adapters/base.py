@@ -36,7 +36,7 @@ class BaseConfigAdapter(BaseAdapter["BaseConfigAdapter"], ABC, Generic[T]):
             dature.Merge(
                 dature.Source(file_=".env", prefix=f"{prefix}_"),
                 dature.Source(prefix=f"{prefix}_"),
-                secret_field_names=("token",),
+                secret_field_names=("token", "password",),
                 mask_secrets=True,
             ),
             dataclass_=cls.data,

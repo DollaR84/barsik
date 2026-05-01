@@ -1,7 +1,6 @@
 from aiogram import types
 
-from barsik.models import User
-
+from barsik import dto
 from barsik import schemas
 
 
@@ -26,7 +25,7 @@ def get_user(message_or_callback_query: types.Message | types.CallbackQuery) -> 
     )
 
 
-def get_name(user: User) -> str:
+def get_name(user: dto.UserData) -> str:
     name = user.first_name
     if user.last_name:
         name = " ".join([name, user.last_name]) if name else user.last_name

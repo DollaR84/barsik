@@ -7,6 +7,7 @@ from barsik.config.adapters import (
     CoreConfig, CoreConfigAdapter,
     GeoConfig, GeoConfigAdapter,
     LocalisationConfig, LocalisationConfigAdapter,
+    PostgresConfig, PostgresConfigAdapter,
     RedisConfig, RedisConfigAdapter,
     BaseServicesConfig, ServicesConfigAdapter,
     SqliteConfig, SqliteConfigAdapter,
@@ -46,6 +47,10 @@ class ConfigProvider(Provider):
     @provide(scope=Scope.APP)
     def get_localisation_config(self, config: BaseConfig) -> LocalisationConfig:
         return resolve_config(config, LocalisationConfigAdapter)
+
+    @provide(scope=Scope.APP)
+    def get_postgres_config(self, config: BaseConfig) -> PostgresConfig:
+        return resolve_config(config, PostgresConfigAdapter)
 
     @provide(scope=Scope.APP)
     def get_redis_config(self, config: BaseConfig) -> RedisConfig:

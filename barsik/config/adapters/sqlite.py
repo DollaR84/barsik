@@ -7,11 +7,15 @@ from .base import BaseConfigAdapter
 @dataclass(frozen=True, slots=True)
 class SqliteConfig:
     path: str = "data.db"
-    debug_sqlalchemy: bool = False
+    debug: bool = False
     is_async: bool = True
 
     @property
-    def uri(self) -> str:
+    def prefix(self) -> str:
+        return "sqlite"
+
+    @property
+    def sync_uri(self) -> str:
         return f"sqlite:///{self.path}"
 
     @property

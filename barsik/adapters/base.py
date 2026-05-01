@@ -33,7 +33,7 @@ class BaseAdapter(ABC, Generic[T]):
     def get_name(cls) -> str:
         suffix = cls.get_suffix()
         _name = cls.__name__.replace(suffix, "")
-        return paschal_case_to_snake_case(_name)
+        return paschal_case_to_snake_case(_name).lower()
 
     @classmethod
     def get_suffix(cls) -> str:
@@ -44,7 +44,7 @@ class BaseAdapter(ABC, Generic[T]):
 
     @classmethod
     def get_adapter(cls, name: str) -> Type[T] | None:
-        return cls._adapters.get(name)
+        return cls._adapters.get(name.lower())
 
     @classmethod
     def get_available_adapters_names(cls) -> list[str]:

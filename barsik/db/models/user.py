@@ -15,4 +15,4 @@ class BaseUser(TimeCreateMixin):  # pylint: disable=too-few-public-methods
     lang: so.Mapped[str | None] = so.mapped_column(sa.String(2), nullable=True)
 
     GET_FIELDS = ["id", "chat_id"]
-    NO_UPDATE_FIELDS = ["id", "chat_id", "time_created"]
+    NO_UPDATE_FIELDS = ["id", "chat_id", "created_at"]

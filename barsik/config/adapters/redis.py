@@ -8,6 +8,7 @@ from .base import BaseConfigAdapter
 class RedisConfig:
     host: str
     port: int = 6379
+    db_num: int = 0
     pool_size: int = 5000
 
     is_key_builder: bool = True
