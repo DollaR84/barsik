@@ -1,0 +1,7 @@
+[tool.semantic_release]
+version_source = "tag"
+commit_parser = "conventional"
+build_command = "pip install build && python -m build"
+
+[tool.semantic_release.changelog]
+file = "CHANGELOG.md"
