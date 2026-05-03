@@ -24,7 +24,7 @@ class DBProvider(Provider):
             await db.close_async_session(session)
 
     @provide(scope=Scope.REQUEST)
-    def get_sync_session(self, db: BaseDBAdapter) -> Generator[Session, None]:
+    def get_sync_session(self, db: BaseDBAdapter) -> Generator[Session, None, None]:
         with db.get_sync_session() as session:
             yield session
             db.close_sync_session(session)
