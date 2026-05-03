@@ -3,8 +3,8 @@ from setuptools import setup, find_packages
 
 extras = {
     "bot": [
-        "aiogram",
-        "aiogram-dialog",
+        "aiogram>=3.0.0",
+        "aiogram-dialog>=2.1.0",
         "redis",
         "aiofiles",
     ],
