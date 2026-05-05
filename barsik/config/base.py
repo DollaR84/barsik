@@ -1,5 +1,6 @@
 from typing import Optional
 
+
 from barsik.config.adapters import (
     BotConfig,
     CoreConfig,

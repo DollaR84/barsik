@@ -33,7 +33,6 @@ class BaseConfigAdapter(BaseAdapter["BaseConfigAdapter"], ABC, Generic[T], is_ab
         prefix = cls.get_prefix()
 
         data = dature.load(
-            dature.EnvFileSource(file=".env", prefix=f"{prefix}_"),
             dature.EnvSource(prefix=f"{prefix}_"),
             secret_field_names=("token", "password",),
             mask_secrets=True,
