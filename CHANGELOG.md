@@ -2,6 +2,14 @@
 
 <!-- version list -->
 
+## v1.4.2 (2026-05-05)
+
+### Bug Fixes
+
+- Fixed bugs for config imports
+  ([`540ed15`](https://github.com/DollaR84/barsik/commit/540ed15224e3aefe9fca985bb4a8c09fb7cfafcc))
+
+
 ## v1.4.1 (2026-05-05)
 
 ### Bug Fixes
