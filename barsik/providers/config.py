@@ -5,7 +5,7 @@ from barsik.config.adapters import (
     BotConfig, BotConfigAdapter,
     CoreConfig, CoreConfigAdapter,
     GeoConfig, GeoConfigAdapter,
-    LLMConfig, LLMConfigAdapter,
+    LlmConfig, LlmConfigAdapter,
     LocalisationConfig, LocalisationConfigAdapter,
     PostgresConfig, PostgresConfigAdapter,
     RedisConfig, RedisConfigAdapter,
@@ -34,8 +34,8 @@ class ConfigProvider(Provider):
         return get_config_section(config, GeoConfigAdapter)
 
     @provide(scope=Scope.APP)
-    def get_llm_config(self, config: BaseConfig) -> LLMConfig:
-        return get_config_section(config, LLMConfigAdapter)
+    def get_llm_config(self, config: BaseConfig) -> LlmConfig:
+        return get_config_section(config, LlmConfigAdapter)
 
     @provide(scope=Scope.APP)
     def get_localisation_config(self, config: BaseConfig) -> LocalisationConfig:

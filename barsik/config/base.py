@@ -4,7 +4,7 @@ from barsik.config.adapters import (
     BotConfig,
     CoreConfig,
     GeoConfig,
-    LLMConfig,
+    LlmConfig,
     LocalisationConfig,
     RedisConfig,
     BaseServicesConfig,
@@ -18,7 +18,7 @@ class BaseConfig:
     core: CoreConfig
     bot: Optional[BotConfig] = None
     geo: Optional[GeoConfig] = None
-    llm: Optional[LLMConfig] = None
+    llm: Optional[LlmConfig] = None
     localisation: Optional[LocalisationConfig] = None
     redis: Optional[RedisConfig] = None
     services: Optional[BaseServicesConfig] = None

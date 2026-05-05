@@ -1,4 +1,4 @@
-from barsik.config.adapters import LLMConfig
+from barsik.config.adapters import LlmConfig
 
 from .base import BaseModel
 from .data import GroqParamsData
@@ -6,7 +6,7 @@ from .data import GroqParamsData
 
 class GroqModel(BaseModel):
 
-    def __init__(self, config: LLMConfig):
+    def __init__(self, config: LlmConfig):
         super().__init__(config)
 
         self._params = GroqParamsData()

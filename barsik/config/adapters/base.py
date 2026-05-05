@@ -13,7 +13,7 @@ from barsik.adapters import BaseAdapter
 T = TypeVar("T", bound=DataclassInstance)
 
 
-class BaseConfigAdapter(BaseAdapter["BaseConfigAdapter"], ABC, Generic[T]):
+class BaseConfigAdapter(BaseAdapter["BaseConfigAdapter"], ABC, Generic[T], is_abstract=True):
     _adapters: dict[str, Type[BaseConfigAdapter]] = {}
     data: Type[T]
     prefix: Optional[str] = None

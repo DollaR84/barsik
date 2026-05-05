@@ -1,7 +1,7 @@
 from .bot import BotConfig, BotConfigAdapter
 from .core import CoreConfig, CoreConfigAdapter
 from .geo import GeoConfig, GeoConfigAdapter
-from .llm import LLMConfig, LLMConfigAdapter
+from .llm import LlmConfig, LlmConfigAdapter
 from .localisation import LocalisationConfig, LocalisationConfigAdapter
 from .postgres import PostgresConfig, PostgresConfigAdapter
 from .redis import RedisConfig, RedisConfigAdapter
@@ -14,7 +14,7 @@ __all__ = (
     "BotConfig",
     "CoreConfig",
     "GeoConfig",
-    "LLMConfig",
+    "LlmConfig",
     "LocalisationConfig",
     "PostgresConfig",
     "RedisConfig",
@@ -25,7 +25,7 @@ __all__ = (
     "BotConfigAdapter",
     "CoreConfigAdapter",
     "GeoConfigAdapter",
-    "LLMConfigAdapter",
+    "LlmConfigAdapter",
     "LocalisationConfigAdapter",
     "PostgresConfigAdapter",
     "RedisConfigAdapter",

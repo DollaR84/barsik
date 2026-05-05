@@ -6,7 +6,7 @@ from adaptix import loader, Provider
 from descanso import RestBuilder
 import requests
 
-from barsik.config.adapters import LLMConfig
+from barsik.config.adapters import LlmConfig
 from barsik.utils.http import BearerAuth, HttpSyncClient
 
 from .base import BaseModel
@@ -34,7 +34,7 @@ class RequestsClient(HttpSyncClient):
 
 class GrokModel(BaseModel):
 
-    def __init__(self, config: LLMConfig):
+    def __init__(self, config: LlmConfig):
         super().__init__(config)
 
         self._params = GrokParamsData()

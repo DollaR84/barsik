@@ -4,7 +4,7 @@ from typing import Any, cast, Optional
 
 from openai import AsyncOpenAI, APIConnectionError, APIStatusError, APITimeoutError, OpenAIError, RateLimitError
 
-from barsik.config.adapters import LLMConfig
+from barsik.config.adapters import LlmConfig
 
 from .adapters import BaseModel
 
@@ -14,7 +14,7 @@ logger = logging.getLogger(__name__)
 
 class LLMService:
 
-    def __init__(self, config: LLMConfig, system_instruction: str = ""):
+    def __init__(self, config: LlmConfig, system_instruction: str = ""):
         self.model = BaseModel.get(config.name, config)
         self.system_instruction = system_instruction
 

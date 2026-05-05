@@ -4,7 +4,7 @@ from abc import abstractmethod
 from typing import Any, Type
 
 from barsik.adapters import BaseAdapter
-from barsik.config.adapters import LLMConfig
+from barsik.config.adapters import LlmConfig
 
 from .data import BaseParamsData
 
@@ -24,7 +24,7 @@ class BaseModel(BaseAdapter, is_abstract=True):
     def get_names(cls) -> list[str]:
         return list(sorted(cls.get_available_adapters_names()))
 
-    def __init__(self, config: LLMConfig):
+    def __init__(self, config: LlmConfig):
         self.config = config
         self._params: BaseParamsData
 
