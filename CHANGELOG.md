@@ -2,6 +2,14 @@
 
 <!-- version list -->
 
+## v1.4.0 (2026-05-05)
+
+### Features
+
+- Created telegram app config and LLM config;
+  ([`9f222f4`](https://github.com/DollaR84/barsik/commit/9f222f40747a12e29075ae7ba449aeb3b8077495))
+
+
 ## v1.3.0 (2026-05-03)
 
 ### Bug Fixes
