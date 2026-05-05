@@ -1,5 +1,3 @@
-from typing import Type
-
 from dishka import from_context, Provider, provide, Scope
 
 from barsik.config import BaseConfig
@@ -15,22 +13,7 @@ from barsik.config.adapters import (
     SqliteConfig, SqliteConfigAdapter,
     TelegramConfig, TelegramConfigAdapter,
 )
-from barsik.config.adapters.base import BaseConfigAdapter, T
-
-
-def resolve_config(config: BaseConfig, adapter_cls: Type[BaseConfigAdapter[T]]) -> T:
-    section_name = adapter_cls.get_section_name()
-    if not section_name:
-        raise RuntimeError(f"{adapter_cls.get_name()} must be set section_name")
-
-    data: T = getattr(config, section_name)
-    if data is not None:
-        return data
-
-    if adapter_cls.optional:
-        return adapter_cls.load()
-
-    raise ValueError(f"{adapter_cls.get_name()} must be set in env")
+from barsik.utils.resolvers import get_config_section
 
 
 class ConfigProvider(Provider):
@@ -40,40 +23,40 @@ class ConfigProvider(Provider):
 
     @provide(scope=Scope.APP)
     def get_bot_config(self, config: BaseConfig) -> BotConfig:
-        return resolve_config(config, BotConfigAdapter)
+        return get_config_section(config, BotConfigAdapter)
 
     @provide(scope=Scope.APP)
     def get_core_config(self, config: BaseConfig) -> CoreConfig:
-        return resolve_config(config, CoreConfigAdapter)
+        return get_config_section(config, CoreConfigAdapter)
 
     @provide(scope=Scope.APP)
     def get_geo_config(self, config: BaseConfig) -> GeoConfig:
-        return resolve_config(config, GeoConfigAdapter)
+        return get_config_section(config, GeoConfigAdapter)
 
     @provide(scope=Scope.APP)
     def get_llm_config(self, config: BaseConfig) -> LLMConfig:
-        return resolve_config(config, LLMConfigAdapter)
+        return get_config_section(config, LLMConfigAdapter)
 
     @provide(scope=Scope.APP)
     def get_localisation_config(self, config: BaseConfig) -> LocalisationConfig:
-        return resolve_config(config, LocalisationConfigAdapter)
+        return get_config_section(config, LocalisationConfigAdapter)
 
     @provide(scope=Scope.APP)
     def get_postgres_config(self, config: BaseConfig) -> PostgresConfig:
-        return resolve_config(config, PostgresConfigAdapter)
+        return get_config_section(config, PostgresConfigAdapter)
 
     @provide(scope=Scope.APP)
     def get_redis_config(self, config: BaseConfig) -> RedisConfig:
-        return resolve_config(config, RedisConfigAdapter)
+        return get_config_section(config, RedisConfigAdapter)
 
     @provide(scope=Scope.APP)
     def get_services_config(self, config: BaseConfig) -> BaseServicesConfig:
-        return resolve_config(config, ServicesConfigAdapter)
+        return get_config_section(config, ServicesConfigAdapter)
 
     @provide(scope=Scope.APP)
     def get_sqlite_config(self, config: BaseConfig) -> SqliteConfig:
-        return resolve_config(config, SqliteConfigAdapter)
+        return get_config_section(config, SqliteConfigAdapter)
 
     @provide(scope=Scope.APP)
     def get_telegram_config(self, config: BaseConfig) -> TelegramConfig:
-        return resolve_config(config, TelegramConfigAdapter)
+        return get_config_section(config, TelegramConfigAdapter)
