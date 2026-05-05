@@ -2,6 +2,14 @@
 
 <!-- version list -->
 
+## v1.4.1 (2026-05-05)
+
+### Bug Fixes
+
+- Move resolve_path from provider to utils and rename on get_config_section
+  ([`9d8a226`](https://github.com/DollaR84/barsik/commit/9d8a22639cc7e62a4b781ea94473cf1c8811113c))
+
+
 ## v1.4.0 (2026-05-05)
 
 ### Features
