@@ -4,8 +4,10 @@ from dishka import from_context, Provider, provide, Scope
 
 from barsik.config import BaseConfig
 from barsik.config.adapters import (
+    BotConfig, BotConfigAdapter,
     CoreConfig, CoreConfigAdapter,
     GeoConfig, GeoConfigAdapter,
+    LLMConfig, LLMConfigAdapter,
     LocalisationConfig, LocalisationConfigAdapter,
     PostgresConfig, PostgresConfigAdapter,
     RedisConfig, RedisConfigAdapter,
@@ -37,12 +39,20 @@ class ConfigProvider(Provider):
     config = from_context(provides=BaseConfig, scope=Scope.APP)
 
     @provide(scope=Scope.APP)
+    def get_bot_config(self, config: BaseConfig) -> BotConfig:
+        return resolve_config(config, BotConfigAdapter)
+
+    @provide(scope=Scope.APP)
     def get_core_config(self, config: BaseConfig) -> CoreConfig:
         return resolve_config(config, CoreConfigAdapter)
 
     @provide(scope=Scope.APP)
     def get_geo_config(self, config: BaseConfig) -> GeoConfig:
         return resolve_config(config, GeoConfigAdapter)
+
+    @provide(scope=Scope.APP)
+    def get_llm_config(self, config: BaseConfig) -> LLMConfig:
+        return resolve_config(config, LLMConfigAdapter)
 
     @provide(scope=Scope.APP)
     def get_localisation_config(self, config: BaseConfig) -> LocalisationConfig:

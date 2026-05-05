@@ -1,8 +1,10 @@
 from typing import Optional
 
 from barsik.config.adapters import (
+    BotConfig,
     CoreConfig,
     GeoConfig,
+    LLMConfig,
     LocalisationConfig,
     RedisConfig,
     BaseServicesConfig,
@@ -14,12 +16,14 @@ from .adapters.base import BaseConfigAdapter
 
 class BaseConfig:
     core: CoreConfig
+    bot: Optional[BotConfig] = None
     geo: Optional[GeoConfig] = None
+    llm: Optional[LLMConfig] = None
     localisation: Optional[LocalisationConfig] = None
     redis: Optional[RedisConfig] = None
     services: Optional[BaseServicesConfig] = None
     db: Optional[SqliteConfig] = None
-    bot: Optional[TelegramConfig] = None
+    telegram: Optional[TelegramConfig] = None
 
     def __init__(self) -> None:
         BaseConfigAdapter(self)

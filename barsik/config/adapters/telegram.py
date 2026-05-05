@@ -6,14 +6,13 @@ from .base import BaseConfigAdapter
 
 @dataclass(frozen=True, slots=True)
 class TelegramConfig:
-    token: str
+    api_id: int
+    api_hash: str
 
-    redis_db: int = 6
-    redis_prefix: str = "fsm"
-    redis_decode_responses: bool = True
+    workdir: str = "/app/sessions/"
 
 
 class TelegramConfigAdapter(BaseConfigAdapter[TelegramConfig]):
     data: Type[TelegramConfig] = TelegramConfig
-    prefix = "BOT"
-    section_name = "bot"
+    prefix = "TELEGRAM"
+    section_name = "telegram"

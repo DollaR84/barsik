@@ -30,6 +30,9 @@ extras = {
         "requests",
         "descanso",
     ],
+    "llm": [
+        "openai",
+    ],
 }
 
 extras["all"] = sorted({dep for deps in extras.values() for dep in deps})
