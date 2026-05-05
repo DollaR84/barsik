@@ -2,6 +2,14 @@
 
 <!-- version list -->
 
+## v1.4.3 (2026-05-05)
+
+### Bug Fixes
+
+- Fixed source for parsing by config
+  ([`382d554`](https://github.com/DollaR84/barsik/commit/382d554628ecd62740cc7015cb61430a5d244353))
+
+
 ## v1.4.2 (2026-05-05)
 
 ### Bug Fixes
