@@ -2,12 +2,15 @@ from __future__ import annotations
 
 from abc import ABC
 from dataclasses import fields, MISSING
+import logging
 from typing import Any, Generic, Optional, Type, TypeVar
 
 import dature
 from dature.protocols import DataclassInstance
+from dature.sources.base import Source
 
 from barsik.adapters import BaseAdapter
+from barsik.utils.cache.env import EnvFieldsCache
 
 
 T = TypeVar("T", bound=DataclassInstance)
@@ -19,6 +22,7 @@ class BaseConfigAdapter(BaseAdapter["BaseConfigAdapter"], ABC, Generic[T], is_ab
     prefix: Optional[str] = None
     section_name: Optional[str] = None
     optional: bool = False
+    secret_field_names: Optional[tuple[str, ...]] = None
 
     @classmethod
     def get_prefix(cls) -> str:
@@ -31,38 +35,42 @@ class BaseConfigAdapter(BaseAdapter["BaseConfigAdapter"], ABC, Generic[T], is_ab
     @classmethod
     def load(cls) -> T:
         prefix = cls.get_prefix()
+        sources: list[Source] = [
+            dature.EnvSource(prefix=f"{prefix}_"),
+        ]
 
         data = dature.load(
-            dature.EnvSource(prefix=f"{prefix}_"),
-            secret_field_names=("token", "password",),
+            *sources,
+            secret_field_names=cls.secret_field_names,
             mask_secrets=True,
             schema=cls.data,
         )
-        setattr(data, "__loaded__", not cls.is_empty(data))
+
         return data
 
     @classmethod
-    def is_empty(cls, data: T) -> bool:
-        for f in fields(data):
-            value = getattr(data, f.name)
-            if f.default is not MISSING:
-                if value != f.default:
-                    return False
-
-            elif f.default_factory is not MISSING:
-                if value != f.default_factory():
-                    return False
-
-            else:
-                if value is not None:
-                    return False
-
-        return True
+    def get_mandatory_fields(cls) -> list[str]:
+        return [
+            field.name for field in fields(cls.data)
+            if field.default is MISSING and field.default_factory is MISSING
+        ]
 
     def __init__(self, config: Any):
+        env_cache = EnvFieldsCache()
+
         for adapter_cls in self._adapters.values():
+            prefix = adapter_cls.get_prefix()
+            if not env_cache.is_section(prefix):
+                continue
+
+            unset_fields = env_cache.check_fields(prefix, self.get_mandatory_fields())
+            if not unset_fields:
+                logger = logging.getLogger()
+                logger.error("unset fields: %s", str(["_".join([prefix, field]) for field in unset_fields]))
+                continue
+
             data = adapter_cls.load()
-            if not getattr(data, "__loaded__", False):
+            if not data:
                 continue
 
             name = adapter_cls.get_section_name()

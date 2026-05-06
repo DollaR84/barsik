@@ -14,3 +14,4 @@ class LlmConfig:
 
 class LlmConfigAdapter(BaseConfigAdapter[LlmConfig]):
     data: Type[LlmConfig] = LlmConfig
+    secret_field_names = ("api_key",)

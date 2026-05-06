@@ -18,3 +18,4 @@ class BotConfigAdapter(BaseConfigAdapter[BotConfig]):
     data: Type[BotConfig] = BotConfig
     prefix = "BOT"
     section_name = "bot"
+    secret_field_names = ("token",)

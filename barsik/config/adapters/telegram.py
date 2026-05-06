@@ -16,3 +16,4 @@ class TelegramConfigAdapter(BaseConfigAdapter[TelegramConfig]):
     data: Type[TelegramConfig] = TelegramConfig
     prefix = "TELEGRAM"
     section_name = "telegram"
+    secret_field_names = ("api_hash",)

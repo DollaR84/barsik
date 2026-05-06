@@ -1,6 +1,5 @@
 from typing import Optional
 
-
 from barsik.config.adapters import (
     BotConfig,
     CoreConfig,
@@ -12,6 +11,7 @@ from barsik.config.adapters import (
     SqliteConfig,
     TelegramConfig,
 )
+
 from .adapters.base import BaseConfigAdapter
 
 

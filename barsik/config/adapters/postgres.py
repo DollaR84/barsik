@@ -53,3 +53,4 @@ class PostgresConfigAdapter(BaseConfigAdapter[PostgresConfig]):
     data: Type[PostgresConfig] = PostgresConfig
     section_name = "db"
     optional = False
+    secret_field_names = ("password",)
