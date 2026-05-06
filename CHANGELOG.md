@@ -2,6 +2,14 @@
 
 <!-- version list -->
 
+## v1.4.4 (2026-05-06)
+
+### Bug Fixes
+
+- Created Env cache keys
+  ([`21b133a`](https://github.com/DollaR84/barsik/commit/21b133a129c31a07e3feff73f42e7d394fd0415f))
+
+
 ## v1.4.3 (2026-05-05)
 
 ### Bug Fixes
