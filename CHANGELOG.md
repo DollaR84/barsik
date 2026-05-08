@@ -2,6 +2,14 @@
 
 <!-- version list -->
 
+## v1.4.5 (2026-05-08)
+
+### Bug Fixes
+
+- Fixed db config annotation and check reinit config section
+  ([`00ca592`](https://github.com/DollaR84/barsik/commit/00ca592eb6d96fa4ce8df9b8b1ea8b4b437c1227))
+
+
 ## v1.4.4 (2026-05-06)
 
 ### Bug Fixes
