@@ -27,12 +27,12 @@ class BaseConfigAdapter(BaseAdapter["BaseConfigAdapter"], ABC, Generic[T], is_ab
 
     @classmethod
     def get_prefix(cls) -> str:
-        prefix = paschal_case_to_words(cls.__name__)[0].upper()
+        prefix = paschal_case_to_words(cls.__name__).split()[0].upper()
         return cls.prefix or prefix
 
     @classmethod
     def get_section_name(cls) -> str:
-        section_name = paschal_case_to_words(cls.__name__)[0].lower()
+        section_name = paschal_case_to_words(cls.__name__).split()[0].lower()
         return cls.section_name or section_name
 
     @classmethod
@@ -65,7 +65,6 @@ class BaseConfigAdapter(BaseAdapter["BaseConfigAdapter"], ABC, Generic[T], is_ab
         for adapter_cls in self._adapters.values():
             prefix = adapter_cls.get_prefix()
             section_name = adapter_cls.get_section_name()
-            logger.debug("%s: prefix: '%s', section_name: '%s'", adapter_cls.__name__, prefix, section_name)
 
             if not env_cache.is_section(prefix):
                 continue
