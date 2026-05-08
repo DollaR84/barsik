@@ -2,6 +2,14 @@
 
 <!-- version list -->
 
+## v1.4.12 (2026-05-09)
+
+### Bug Fixes
+
+- Added method for get all adapters cls
+  ([`4b77889`](https://github.com/DollaR84/barsik/commit/4b77889e23dcb01630e2f15aa038e5bdc34ed299))
+
+
 ## v1.4.11 (2026-05-08)
 
 ### Bug Fixes
