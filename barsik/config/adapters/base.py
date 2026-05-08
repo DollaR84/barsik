@@ -78,6 +78,6 @@ class BaseConfigAdapter(BaseAdapter["BaseConfigAdapter"], ABC, Generic[T], is_ab
             if not data:
                 continue
 
-            if getattr(config, section_name) is not None:
+            if getattr(config, section_name, None) is not None:
                 continue
             setattr(config, section_name, data)
