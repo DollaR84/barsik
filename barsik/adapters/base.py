@@ -49,3 +49,7 @@ class BaseAdapter(ABC, Generic[T]):
     @classmethod
     def get_available_adapters_names(cls) -> list[str]:
         return list(cls._adapters.keys())
+
+    @classmethod
+    def get_adapters(cls) -> list[Type[T]]:
+        return list(cls._adapters.values())
