@@ -2,6 +2,14 @@
 
 <!-- version list -->
 
+## v1.4.7 (2026-05-08)
+
+### Bug Fixes
+
+- Fixed bugs in utils cache env
+  ([`6f97a72`](https://github.com/DollaR84/barsik/commit/6f97a72c699f15b68b12006f639c9a34107e1e34))
+
+
 ## v1.4.6 (2026-05-08)
 
 ### Bug Fixes
