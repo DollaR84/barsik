@@ -2,6 +2,14 @@
 
 <!-- version list -->
 
+## v1.4.10 (2026-05-08)
+
+### Bug Fixes
+
+- Fixed bug auto naming refix and section name on config adapters
+  ([`1a8218f`](https://github.com/DollaR84/barsik/commit/1a8218f9563a82ca021e939bf8af290017533780))
+
+
 ## v1.4.9 (2026-05-08)
 
 ### Bug Fixes
