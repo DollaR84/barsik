@@ -2,6 +2,14 @@
 
 <!-- version list -->
 
+## v1.4.11 (2026-05-08)
+
+### Bug Fixes
+
+- Fixed check section exist on config
+  ([`7a85862`](https://github.com/DollaR84/barsik/commit/7a858628b0e225192f9d59b7c84721232ff1c909))
+
+
 ## v1.4.10 (2026-05-08)
 
 ### Bug Fixes
