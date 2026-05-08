@@ -16,17 +16,17 @@ class EnvFieldsCache:
             self._cache[prefix].append(field)
 
     def is_section(self, prefix: str) -> bool:
-        return prefix in self._cache
+        return prefix.upper() in self._cache
 
     def is_field(self, prefix: str, field: str) -> bool:
-        section = self._cache[prefix]
-        return field in section
+        section = self._cache[prefix.upper()]
+        return field.upper() in section
 
     def check_fields(self, prefix: str, fields: list[str]) -> list[str]:
-        section = self._cache[prefix]
+        section = self._cache[prefix.upper()]
         unset_fields = []
 
         for field in fields:
-            if field not in section:
-                unset_fields.append(field)
+            if field.upper() not in section:
+                unset_fields.append(field.upper())
         return unset_fields

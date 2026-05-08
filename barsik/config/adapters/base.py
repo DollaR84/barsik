@@ -66,7 +66,7 @@ class BaseConfigAdapter(BaseAdapter["BaseConfigAdapter"], ABC, Generic[T], is_ab
             unset_fields = env_cache.check_fields(prefix, adapter_cls.get_mandatory_fields())
             if unset_fields:
                 logger = logging.getLogger()
-                logger.error("unset fields: %s", str(["_".join([prefix, field]) for field in unset_fields]))
+                logger.error("unset fields: %s", str(["_".join([prefix, field.upper()]) for field in unset_fields]))
                 continue
 
             data = adapter_cls.load()
@@ -74,6 +74,6 @@ class BaseConfigAdapter(BaseAdapter["BaseConfigAdapter"], ABC, Generic[T], is_ab
                 continue
 
             name = adapter_cls.get_section_name()
-            if getattr(config, name) is None:
+            if getattr(config, name) is not None:
                 continue
             setattr(config, name, data)
