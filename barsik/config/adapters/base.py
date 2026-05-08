@@ -11,6 +11,7 @@ from dature.sources.base import Source
 
 from barsik.adapters import BaseAdapter
 from barsik.utils.cache.env import EnvFieldsCache
+from barsik.utils.text import paschal_case_to_words
 
 
 T = TypeVar("T", bound=DataclassInstance)
@@ -26,11 +27,13 @@ class BaseConfigAdapter(BaseAdapter["BaseConfigAdapter"], ABC, Generic[T], is_ab
 
     @classmethod
     def get_prefix(cls) -> str:
-        return cls.prefix or cls.get_name().upper()
+        prefix = paschal_case_to_words(cls.__name__)[0].upper()
+        return cls.prefix or prefix
 
     @classmethod
     def get_section_name(cls) -> str:
-        return cls.section_name or cls.get_name().lower()
+        section_name = paschal_case_to_words(cls.__name__)[0].lower()
+        return cls.section_name or section_name
 
     @classmethod
     def load(cls) -> T:

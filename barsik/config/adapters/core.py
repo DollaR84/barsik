@@ -11,4 +11,6 @@ class CoreConfig:
 
 class CoreConfigAdapter(BaseConfigAdapter[CoreConfig]):
     data: Type[CoreConfig] = CoreConfig
+    prefix = "CORE"
+    section_name = "core"
     optional = True
