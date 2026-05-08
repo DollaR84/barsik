@@ -2,6 +2,14 @@
 
 <!-- version list -->
 
+## v1.4.6 (2026-05-08)
+
+### Bug Fixes
+
+- Fixed cyrcle import base config to utils.cache.config and fixed check initial env variables
+  ([`8d87164`](https://github.com/DollaR84/barsik/commit/8d87164596fc98af6b4fd4424e8b9a7a038fb814))
+
+
 ## v1.4.5 (2026-05-08)
 
 ### Bug Fixes
