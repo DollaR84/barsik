@@ -74,4 +74,6 @@ class BaseConfigAdapter(BaseAdapter["BaseConfigAdapter"], ABC, Generic[T], is_ab
                 continue
 
             name = adapter_cls.get_section_name()
+            if getattr(config, name) is None:
+                continue
             setattr(config, name, data)

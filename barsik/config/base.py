@@ -6,6 +6,7 @@ from barsik.config.adapters import (
     GeoConfig,
     LlmConfig,
     LocalisationConfig,
+    PostgresConfig,
     RedisConfig,
     BaseServicesConfig,
     SqliteConfig,
@@ -23,7 +24,7 @@ class BaseConfig:
     localisation: Optional[LocalisationConfig] = None
     redis: Optional[RedisConfig] = None
     services: Optional[BaseServicesConfig] = None
-    db: Optional[SqliteConfig] = None
+    db: Optional[PostgresConfig | SqliteConfig] = None
     telegram: Optional[TelegramConfig] = None
 
     def __init__(self) -> None:
