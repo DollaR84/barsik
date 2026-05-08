@@ -1,15 +1,10 @@
 from functools import lru_cache
 from typing import Type, TypeVar
 
-from pydantic_settings import BaseSettings
 
-from barsik.config import BaseConfig
-
-
-T = TypeVar("T", bound=BaseConfig)
-P = TypeVar("P", bound=BaseSettings)
+T = TypeVar("T")
 
 
 @lru_cache(maxsize=1)
-def get_config(config_cls: Type[T | P]) -> T | P:
+def get_config(config_cls: Type[T]) -> T:
     return config_cls()

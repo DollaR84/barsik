@@ -63,8 +63,8 @@ class BaseConfigAdapter(BaseAdapter["BaseConfigAdapter"], ABC, Generic[T], is_ab
             if not env_cache.is_section(prefix):
                 continue
 
-            unset_fields = env_cache.check_fields(prefix, self.get_mandatory_fields())
-            if not unset_fields:
+            unset_fields = env_cache.check_fields(prefix, adapter_cls.get_mandatory_fields())
+            if unset_fields:
                 logger = logging.getLogger()
                 logger.error("unset fields: %s", str(["_".join([prefix, field]) for field in unset_fields]))
                 continue
