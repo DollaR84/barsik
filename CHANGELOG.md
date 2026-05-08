@@ -2,6 +2,14 @@
 
 <!-- version list -->
 
+## v1.4.9 (2026-05-08)
+
+### Bug Fixes
+
+- Added debug for initial adapters
+  ([`7439bf9`](https://github.com/DollaR84/barsik/commit/7439bf9f69b27c195c56c8d36ecde2a1cfb46a48))
+
+
 ## v1.4.8 (2026-05-08)
 
 ### Bug Fixes
