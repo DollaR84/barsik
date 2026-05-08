@@ -11,4 +11,6 @@ class GeoConfig:
 
 class GeoConfigAdapter(BaseConfigAdapter[GeoConfig]):
     data: Type[GeoConfig] = GeoConfig
+    prefix = "GEO"
+    section_name = "geo"
     optional = True

@@ -25,5 +25,6 @@ class SqliteConfig:
 
 class SqliteConfigAdapter(BaseConfigAdapter[SqliteConfig]):
     data: Type[SqliteConfig] = SqliteConfig
+    prefix = "SQLITE"
     section_name = "db"
     optional = True

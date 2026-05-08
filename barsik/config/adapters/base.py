@@ -59,16 +59,19 @@ class BaseConfigAdapter(BaseAdapter["BaseConfigAdapter"], ABC, Generic[T], is_ab
         ]
 
     def __init__(self, config: Any):
+        logger = logging.getLogger()
         env_cache = EnvFieldsCache()
 
         for adapter_cls in self._adapters.values():
             prefix = adapter_cls.get_prefix()
+            section_name = adapter_cls.get_section_name()
+            logger.debug("%s: prefix: '%s', section_name: '%s'", adapter_cls.__name__, prefix, section_name)
+
             if not env_cache.is_section(prefix):
                 continue
 
             unset_fields = env_cache.check_fields(prefix, adapter_cls.get_mandatory_fields())
             if unset_fields:
-                logger = logging.getLogger()
                 logger.error("unset fields: %s", str(["_".join([prefix, field.upper()]) for field in unset_fields]))
                 continue
 
@@ -76,7 +79,6 @@ class BaseConfigAdapter(BaseAdapter["BaseConfigAdapter"], ABC, Generic[T], is_ab
             if not data:
                 continue
 
-            name = adapter_cls.get_section_name()
-            if getattr(config, name) is not None:
+            if getattr(config, section_name) is not None:
                 continue
-            setattr(config, name, data)
+            setattr(config, section_name, data)
