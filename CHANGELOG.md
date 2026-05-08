@@ -2,6 +2,14 @@
 
 <!-- version list -->
 
+## v1.4.8 (2026-05-08)
+
+### Bug Fixes
+
+- Fixed bug on auto naming prefix and section_name config adapters
+  ([`28e4a67`](https://github.com/DollaR84/barsik/commit/28e4a6797ea51f3e49425b10905d2e487f1e00bc))
+
+
 ## v1.4.7 (2026-05-08)
 
 ### Bug Fixes
