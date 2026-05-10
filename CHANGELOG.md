@@ -2,6 +2,14 @@
 
 <!-- version list -->
 
+## v1.4.13 (2026-05-10)
+
+### Bug Fixes
+
+- Added db adapters to db module import
+  ([`c64a5b6`](https://github.com/DollaR84/barsik/commit/c64a5b6e00887f265defc14637f1d0136eccd812))
+
+
 ## v1.4.12 (2026-05-09)
 
 ### Bug Fixes
