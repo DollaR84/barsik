@@ -28,10 +28,6 @@ class BaseModel(BaseAdapter, is_abstract=True):
         self.config = config
         self._params: BaseParamsData
 
-    @abstractmethod
-    def __call__(self) -> str:
-        raise NotImplementedError
-
     @property
     def params(self) -> dict[str, Any]:
         return self._params.dict()
