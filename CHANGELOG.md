@@ -2,6 +2,14 @@
 
 <!-- version list -->
 
+## v1.4.14 (2026-05-26)
+
+### Bug Fixes
+
+- Fixed bag llm base
+  ([`221c47c`](https://github.com/DollaR84/barsik/commit/221c47c42af4278620b0f6362dd802b393c49798))
+
+
 ## v1.4.13 (2026-05-10)
 
 ### Bug Fixes
